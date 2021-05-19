@@ -1,6 +1,4 @@
-import streamlit as st
-import pandas as pd
-import altair as alt
-import numpy as np
-
 streamlit==0.82.0
+pandas==1.2.4
+altair==4.1.0
+numpy==1.20.3
