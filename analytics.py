@@ -3,20 +3,25 @@ import pandas as pd
 import altair as alt
 import numpy as np
 
+# STYLES
+st.set_page_config(page_title='TT Analytics', 
+												page_icon = "🏓", layout = 'centered', 
+												initial_sidebar_state = 'auto')
 hide_streamlit_style = """
             <style>
             #MainMenu {visibility: hidden;}
             footer {visibility: hidden;}
             </style>
             """
-st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+
 
 # HEADER 
-hdCol1, hdCol2, hdCol3 = st.beta_columns(3)
+hdCol1, hdCol2, hdCol3 = st.beta_columns([1, 3, 1])
 with hdCol1:
 	st.write("")
 with hdCol2:
-	st.title("Dasbboard")
+	st.title("TT Analytics Dashboard")
 with hdCol3:
 	st.write("")
 
@@ -73,3 +78,7 @@ option = st.sidebar.selectbox('Select a player to view player data', dfLeaderBoa
 			
 option
 
+# Player Head to Head
+playerH2H = st.sidebar.multiselect('Please choose 2 players', dfLeaderBoard['Player'])
+if len(playerH2H) > 2:
+	st.error('You can pick 2 players at a time')
