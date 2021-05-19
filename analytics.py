@@ -3,12 +3,20 @@ import pandas as pd
 import altair as alt
 import numpy as np
 
+hide_streamlit_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+
 # HEADER 
 hdCol1, hdCol2, hdCol3 = st.beta_columns(3)
 with hdCol1:
 	st.write("")
 with hdCol2:
-	st.title("Test")
+	st.title("Dasbboard")
 with hdCol3:
 	st.write("")
 
