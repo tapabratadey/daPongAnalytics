@@ -3,13 +3,12 @@ import pandas as pd
 import altair as alt
 import numpy as np
 
-
 # HEADER 
 hdCol1, hdCol2, hdCol3 = st.beta_columns(3)
 with hdCol1:
 	st.write("")
 with hdCol2:
-	st.title("Dashboard")
+	st.title("Test")
 with hdCol3:
 	st.write("")
 
