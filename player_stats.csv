@@ -1,4 +1,4 @@
-Player,ServePointsWon,Aces,ServiceFault,ReceivingRetRate,ThirdBallAttackWon,BackhandOpeningRate,PointsWonWithBackhand,PointsWonWithForehand,ForehandOpeningRate,PointsWonWithDefense,RallyPointsWon,CloseToTable,Wins,Rank
+Player,Points Won From Serve,Aces,Service Faults,Receiving Rate,Points Won From Third Ball Attacks,Backhand Opening Rate,Points Won With Backhand,Points Won With Forehand,Forehand Opening Rate,Points Won With Defense,Points Won From Rally,Points Won Close To Table,Win %,Rank
 Diana Bayne,.70,4,1,.90,.64,.30,.39,.69,.36,.63,.21,.75,.89,1
 Bjorn Pickard,.33,3,2,.29,.75,.02,.86,.53,.08,.85,.26,.6,.86,2
 Martin Whithalgh,.51,2,9,.72,.82,.26,.28,.17,.31,.26,.93,.14,.84,3
