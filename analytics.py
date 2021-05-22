@@ -154,11 +154,11 @@ with head_to_head_header_container:
 
 with head_to_head_container:
 	selectPlayers = st.multiselect('', df['Player'])
-	idx, c = np.where(df == selectPlayers[0])
-	idx1, c1 = np.where(df == selectPlayers[1])
 	if len(selectPlayers) > 2:
 		st.error('You can only choose 2 players')
 	if len(selectPlayers) == 2:
+		idx, c = np.where(df == selectPlayers[0])
+		idx1, c1 = np.where(df == selectPlayers[1])
 		st.markdown("<h3 style='text-align: center'>{} #{} v. {} #{}</h3>".format(selectPlayers[0], 
 		df.iloc[idx].values[0][14], selectPlayers[1], df.iloc[idx1].values[0][14]), unsafe_allow_html=True)
 		stats = df.columns[1:14]
