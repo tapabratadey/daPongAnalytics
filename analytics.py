@@ -1,144 +1,132 @@
+# TO RUN THE APP:
+# open terminal
+# go to streamlit file location
+# install libs, run: "pip install -r requirements.txt"
+# "streamlit run analytics.py"
+
+######################################################################
+# imports
+######################################################################
+
 import streamlit as st
 import pandas as pd
 import altair as alt
 import numpy as np
-import base64
-import plotly.figure_factory as ff
 from streamlit.elements import markdown
 
-# STYLES
+
+######################################################################
+# Page Styles
+######################################################################
+
 st.set_page_config(page_title='TT Analytics', 
 												page_icon = "🏓", layout = 'centered', 
 												initial_sidebar_state = 'auto')
 hide_streamlit_style = """
-            <style>
-            #MainMenu {visibility: hidden;}
-            footer {visibility: hidden;}
-            </style>
-            """
+							<style>
+							#MainMenu {visibility: hidden;}
+							footer {visibility: hidden;}
+							</style>
+							"""
 st.markdown(hide_streamlit_style, unsafe_allow_html=True)
+st.markdown(
+        f"""
+<style>
+    .reportview-container .main .block-container{{
+        max-width: 90%;
+        padding-top: 5rem;
+        padding-right: 5rem;
+        padding-left: 5rem;
+        padding-bottom: 5rem;
+    }}
+    img{{
+    	max-width:40%;
+    	margin-bottom:40px;
+    }}
+</style>
+""",
+        unsafe_allow_html=True,
+    )
 
+######################################################################
+# HORIZONTAL CONTAINERS
+######################################################################
 
-# HEADER 
-hdCol1, hdCol2, hdCol3 = st.beta_columns([1, 3, 1])
-with hdCol1:
-	st.write("")
-with hdCol2:
+header_container = st.beta_container()
+leaderboard_container = st.beta_container()	
+player_data_container = st.beta_container()
+head_to_head_container = st.beta_container()
+
+######################################################################
+# HEADER
+######################################################################
+
+with header_container:
 	st.title("TT Analytics Dashboard")
-with hdCol3:
-	st.write("")
+	st.write("***")
+	st.header("Leaderboard")
 
-"""
-***
-"""
+######################################################################
+# LEADERBOARD
+######################################################################
 
-# HEADER - LEADERBOARD
-hdCol4, hdCol5, hdCol6 = st.beta_columns([2, 1, 2])
-with hdCol5:
-	"""
-	### Leaderboard
-	"""
-
-# LEADERBOARD - TABLE
-lbCol1, lbCol2 = st.beta_columns(2)
-with lbCol1:	
-	# read csv
-	# make a copy of the dataframe as df
-	athlete_data = pd.read_csv('player_stats.csv')
-	df = athlete_data.copy()
+with leaderboard_container:
+	lbCol1, lbCol2 = st.beta_columns(2)
 	
-	# grab Player and Wins columns, rename, 
-	# remove index and convert win ratio to percent
-	dfLeaderBoard = df[['Rank','Player', 'Win %']]
-	# dfLeaderBoard.columns = ['Rank', 'Player', 'Win %']
-	dfLeaderBoard.index = [""] * len(dfLeaderBoard)
-	dfLeaderBoard['Win %'] = (dfLeaderBoard['Win %'] * 100).astype(str) + "%"
+	# display leaderboard
+	with lbCol1:
+		# read csv
+		# make a copy of the dataframe as df
+		athlete_data = pd.read_csv('player_stats.csv')
+		df = athlete_data.copy()
+		
+		# grab Player and Wins columns, rename, 
+		# remove index and convert win ratio to percent
+		dfLeaderBoard = df[['Rank','Player', 'Win %']]
+		# dfLeaderBoard.columns = ['Rank', 'Player', 'Win %']
+		dfLeaderBoard.index = [""] * len(dfLeaderBoard)
+		dfLeaderBoard['Win %'] = (dfLeaderBoard['Win %'] * 100).astype(str) + "%"
+		# dfLeaderBoard
+		st.table(dfLeaderBoard)
+	
+	# display leaderboard data in bar chart
+	with lbCol2:
+		st.write('#')
+		st.write('#')
+		leaderBoard = pd.DataFrame(
+			{
+				'Win %': df['Win %'],
+				'Rank': df["Rank"]
+			}, 
+		)
+		chart = alt.Chart(leaderBoard).mark_bar().encode(
+			x = alt.X('Rank:O'),
+			y = alt.Y('Win %:Q', axis=alt.Axis(format="%", tickCount=leaderBoard.shape[0], grid=False))
+		)
+		st.altair_chart(chart, use_container_width=True)
 
-	st.table(dfLeaderBoard)
-# LEADERBOARD - BAR CHART
-with lbCol2:
-	st.write('#')
-	st.write('#')
-	leaderBoard = pd.DataFrame(
-		{
-			'Win %': df['Win %'] * 100,
-			'Rank': df["Rank"]
-		}, 
-	)
-	chart = alt.Chart(leaderBoard).mark_bar().encode(
-		x = alt.X('Rank:O', axis=alt.Axis(tickCount=leaderBoard.shape[0], grid=False)),
-		y = alt.Y('Win %:Q')
-	)
-	st.altair_chart(chart, use_container_width=True)
+######################################################################
+# PLAYER DATA
+######################################################################
 
-st.write("***")
-
-# HEADER - PLAYER DATA 
-pdCol1, pdCol2, pdCol3 = st.beta_columns([2, 1, 2])
-with pdCol2:
-	"""
-	### Player Data
-	"""
-pdCol4, pdCol5, pdCol6 = st.beta_columns([1, 3, 1])
-with pdCol5:
-	"""
-	##### (Select a player from the sidebar on the left to a view player data)
-	"""
-
-st.write("#")	
-
-#	PLAYER DATA - SideBar options
-selectedPlayer = st.sidebar.selectbox('Select a player to view player data', dfLeaderBoard['Player'])
-selectedPlayer
-idx, c = np.where(df == selectedPlayer)
-selectedPlayerData = st.selectbox('Select type of player data', df.columns[1:])
-selectedPlayerData
-df["%s" %selectedPlayerData][idx]
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# HEAD TO HEAD STATS
-st.write("***")	
-# HEADER - PLAYER DATA 
-pdCol1, pdCol2, pdCol3 = st.beta_columns([1.5, 2, 1.5])
-with pdCol2:
-	"""
-	### Player Head-to-Head Stats
-	"""
-pdCol4, pdCol5, pdCol6 = st.beta_columns([1, 4, 1])
-with pdCol5:
-	"""
-	##### (Select 2 players from the sidebar on the left to a view head-to-head stats)
-	"""
-st.write("#")	
-
-# PLAYER HEAD TO HEAD STATS
-playerH2H = st.sidebar.multiselect('Please choose 2 players to view head-to-head stats', dfLeaderBoard['Player'])
-if len(playerH2H) > 2:
-	st.error('You can pick 2 players at a time')
-if len(playerH2H) == 2:
-	pdCol7, pdCol8, pdCol9 = st.beta_columns(3)
-	with pdCol7:
-		playerH2H[0]
-	with pdCol8:
-		playerH2H[1]
-
-def downloadCSV():
-	csv = df.to_csv(index=False)
-	b64 = base64.b64encode(csv.encode()).decode()
-	href = f'<a href="data:file/csv;base64,{b64}" download="player_stats.csv">Download csv file</a>'
-	return href
-
-#Download CSV file
-st.markdown(downloadCSV(), unsafe_allow_html = True)
+with player_data_container:
+	st.header("Player data")
+	start_player_list = ['Select a player'] + df['Player'].unique().tolist()
+	start_data_list = ['Select player data'] + df.columns[1:].unique().tolist()
+	selectedPlayer = st.selectbox('Select a player to view player data', start_player_list)
+	if (selectedPlayer != "Select a player"):
+		idx, c = np.where(df == selectedPlayer)
+		st.subheader('Player: %s #%d' % (selectedPlayer, df.iloc[idx].values[0][14]))
+		pdChart = pd.DataFrame(
+			{
+				'Player Data': df.columns[1:14],
+				'Values': df.iloc[idx].values[0][1:14]
+			}
+		)
+		playerDataChart = alt.Chart(pdChart).mark_bar().encode(
+			x = alt.X('Player Data:O'),
+			y = alt.Y('Values:Q', axis=alt.Axis(format='%', tickCount=leaderBoard.shape[0])),
+		).properties(
+			height=600
+		)
+		st.altair_chart(playerDataChart, use_container_width=True)
