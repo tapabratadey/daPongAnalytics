@@ -112,7 +112,6 @@ with leaderboard_container:
 with player_data_container:
 	st.header("Player data")
 	start_player_list = ['Select a player'] + df['Player'].unique().tolist()
-	start_data_list = ['Select player data'] + df.columns[1:].unique().tolist()
 	selectedPlayer = st.selectbox('Select a player to view player data', start_player_list)
 	if (selectedPlayer != "Select a player"):
 		idx, c = np.where(df == selectedPlayer)
@@ -130,3 +129,10 @@ with player_data_container:
 			height=600
 		)
 		st.altair_chart(playerDataChart, use_container_width=True)
+
+######################################################################
+# PLAYER HEAD-TO-HEAD DATA
+######################################################################
+
+with head_to_head_container:
+	st.header("Player Head-To-Head data")
