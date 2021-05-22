@@ -13,7 +13,7 @@ import pandas as pd
 import altair as alt
 import numpy as np
 from streamlit.elements import markdown
-
+import plotly.express as px
 
 ######################################################################
 # Page Styles
@@ -39,10 +39,7 @@ st.markdown(
         padding-left: 5rem;
         padding-bottom: 5rem;
     }}
-    img{{
-    	max-width:40%;
-    	margin-bottom:40px;
-    }}
+		
 </style>
 """,
         unsafe_allow_html=True,
@@ -53,8 +50,10 @@ st.markdown(
 ######################################################################
 
 header_container = st.beta_container()
-leaderboard_container = st.beta_container()	
+leaderboard_container = st.beta_container()
+player_data_header_container = st.beta_container()	
 player_data_container = st.beta_container()
+head_to_head_header_container = st.beta_container()
 head_to_head_container = st.beta_container()
 
 ######################################################################
@@ -62,9 +61,9 @@ head_to_head_container = st.beta_container()
 ######################################################################
 
 with header_container:
-	st.title("TT Analytics Dashboard")
+	st.markdown("<h1 style='text-align: center'>TT Analytics Dashboard</h1>", unsafe_allow_html=True)
 	st.write("***")
-	st.header("Leaderboard")
+	st.markdown("<h2 style='text-align: center'>Leaderboard</h2>", unsafe_allow_html=True)
 
 ######################################################################
 # LEADERBOARD
@@ -101,21 +100,31 @@ with leaderboard_container:
 		)
 		chart = alt.Chart(leaderBoard).mark_bar().encode(
 			x = alt.X('Rank:O'),
-			y = alt.Y('Win %:Q', axis=alt.Axis(format="%", tickCount=leaderBoard.shape[0], grid=False))
-		)
+			y = alt.Y('Win %:Q', axis=alt.Axis(format="%", tickCount=leaderBoard.shape[0], grid=False)),
+			tooltip=['Rank', 'Win %']
+		).interactive()
 		st.altair_chart(chart, use_container_width=True)
+
+######################################################################
+# PLAYER DATA HEADER
+######################################################################
+
+with player_data_header_container:
+	st.markdown("<h2 style='text-align: center'>Player Data</h2>", unsafe_allow_html=True)
+	st.markdown("<h5 style='text-align: center'>Select a player to view player data</h5>", unsafe_allow_html=True)
 
 ######################################################################
 # PLAYER DATA
 ######################################################################
 
-with player_data_container:
-	st.header("Player data")
+with player_data_container:	
 	start_player_list = ['Select a player'] + df['Player'].unique().tolist()
-	selectedPlayer = st.selectbox('Select a player to view player data', start_player_list)
+	st.text("\n")
+	selectedPlayer = st.selectbox('', start_player_list)
 	if (selectedPlayer != "Select a player"):
 		idx, c = np.where(df == selectedPlayer)
-		st.subheader('Player: %s #%d' % (selectedPlayer, df.iloc[idx].values[0][14]))
+		st.markdown("<h3 style='text-align: center'>{} #{}</h3>".format(selectedPlayer, 
+		df.iloc[idx].values[0][14]), unsafe_allow_html=True)
 		pdChart = pd.DataFrame(
 			{
 				'Player Data': df.columns[1:14],
@@ -125,14 +134,43 @@ with player_data_container:
 		playerDataChart = alt.Chart(pdChart).mark_bar().encode(
 			x = alt.X('Player Data:O'),
 			y = alt.Y('Values:Q', axis=alt.Axis(format='%', tickCount=leaderBoard.shape[0])),
+			tooltip=['Player Data', 'Values']
 		).properties(
 			height=600
-		)
+		).interactive()
 		st.altair_chart(playerDataChart, use_container_width=True)
 
 ######################################################################
-# PLAYER HEAD-TO-HEAD DATA
+# PLAYER HEAD-TO-HEAD HEADER
 ######################################################################
 
+with head_to_head_header_container:
+	st.markdown("<h2 style='text-align: center'>Player Head-To-Head Data</h2>", unsafe_allow_html=True)
+	st.markdown("<h5 style='text-align: center'>Select 2 players for a head-to-head comparison</h5>", unsafe_allow_html=True)
+
+######################################################################
+# PLAYER HEAD-TO-HEAD DATA
+######################################################################	
+
 with head_to_head_container:
-	st.header("Player Head-To-Head data")
+	selectPlayers = st.multiselect('', df['Player'])
+	idx, c = np.where(df == selectPlayers[0])
+	idx1, c1 = np.where(df == selectPlayers[1])
+	if len(selectPlayers) > 2:
+		st.error('You can only choose 2 players')
+	if len(selectPlayers) == 2:
+		st.markdown("<h3 style='text-align: center'>{} #{} v. {} #{}</h3>".format(selectPlayers[0], 
+		df.iloc[idx].values[0][14], selectPlayers[1], df.iloc[idx1].values[0][14]), unsafe_allow_html=True)
+		stats = df.columns[1:14]
+		df = pd.DataFrame(
+    [df.iloc[idx].values[0][:14], df.iloc[idx1].values[0][:14]],
+    columns=df.columns[:14]
+		)
+
+		fig = px.bar(df, x="Player", y=df.columns[:14], barmode='group', height=600)
+		fig.update_layout(
+			yaxis = dict(
+				tickformat = ',.0%',
+				range = [0,1]
+		))
+		st.plotly_chart(fig, use_container_width=True)
