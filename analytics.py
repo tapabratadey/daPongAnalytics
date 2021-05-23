@@ -153,6 +153,8 @@ with head_to_head_header_container:
 ######################################################################	
 
 with head_to_head_container:
+	p1Score = 0
+	p2Score = 0
 	selectPlayers = st.multiselect('', df['Player'])
 	if len(selectPlayers) > 2:
 		st.error('You can only choose 2 players')
@@ -162,15 +164,29 @@ with head_to_head_container:
 		st.markdown("<h3 style='text-align: center'>{} #{} v. {} #{}</h3>".format(selectPlayers[0], 
 		df.iloc[idx].values[0][14], selectPlayers[1], df.iloc[idx1].values[0][14]), unsafe_allow_html=True)
 		stats = df.columns[1:14]
-		df = pd.DataFrame(
+		compareDF = pd.DataFrame(
     [df.iloc[idx].values[0][:14], df.iloc[idx1].values[0][:14]],
     columns=df.columns[:14]
 		)
 
-		fig = px.bar(df, x="Player", y=df.columns[:14], barmode='group', height=600)
+		fig = px.bar(compareDF, x="Player", y=df.columns[:14], barmode='group', height=600)
 		fig.update_layout(
 			yaxis = dict(
 				tickformat = ',.0%',
 				range = [0,1]
 		))
 		st.plotly_chart(fig, use_container_width=True)
+		st.markdown("<h3 style='text-align: center'>Who would win?</h3>", unsafe_allow_html=True)
+		toLoop = len(df.iloc[idx].values[0][1:15])
+		p1Score = 0
+		p2Score = 0
+		for i in range(1, toLoop):
+			p1Score += df.iloc[idx].values[0][i]
+			p2Score += df.iloc[idx1].values[0][i]
+		st.markdown("<h4 style='text-align: center'>Based on the cumulative data, the predicted winner is....</h4>", unsafe_allow_html=True)
+		if p1Score < p2Score:
+			st.markdown("<h4 style='text-align: center'>{} with a score of {}</h4>".format(selectPlayers[1], p2Score), unsafe_allow_html=True)
+			st.markdown("<h5 style='text-align: center'>{} had a score of {}</h5>".format(selectPlayers[0], p1Score), unsafe_allow_html=True)					
+		elif p2Score < p1Score:
+			st.markdown("<h4 style='text-align: center'>{} with a score of {}</h4>".format(selectPlayers[0], p1Score), unsafe_allow_html=True)					
+			st.markdown("<h5 style='text-align: center'>{} had a score of {}</h5>".format(selectPlayers[1], p2Score), unsafe_allow_html=True)
