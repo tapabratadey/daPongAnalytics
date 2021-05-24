@@ -55,6 +55,8 @@ player_data_header_container = st.beta_container()
 player_data_container = st.beta_container()
 head_to_head_header_container = st.beta_container()
 head_to_head_container = st.beta_container()
+player_earnings_header = st.beta_container()
+player_earnings = st.beta_container()
 
 ######################################################################
 # HEADER
@@ -185,8 +187,20 @@ with head_to_head_container:
 			p2Score += df.iloc[idx1].values[0][i]
 		st.markdown("<h4 style='text-align: center'>Based on the cumulative data, the predicted winner is....</h4>", unsafe_allow_html=True)
 		if p1Score < p2Score:
-			st.markdown("<h4 style='text-align: center'>{} with a score of {}</h4>".format(selectPlayers[1], p2Score), unsafe_allow_html=True)
-			st.markdown("<h5 style='text-align: center'>{} had a score of {}</h5>".format(selectPlayers[0], p1Score), unsafe_allow_html=True)					
+			st.markdown("<h4 style='text-align: center'>{} with a score of {}, comparing to {}'s score of {}</h4>".format(selectPlayers[1], p2Score,selectPlayers[0], round(p1Score, 2)), unsafe_allow_html=True)
 		elif p2Score < p1Score:
-			st.markdown("<h4 style='text-align: center'>{} with a score of {}</h4>".format(selectPlayers[0], p1Score), unsafe_allow_html=True)					
-			st.markdown("<h5 style='text-align: center'>{} had a score of {}</h5>".format(selectPlayers[1], p2Score), unsafe_allow_html=True)
+			st.markdown("<h4 style='text-align: center'>{} with a score of {}, comparing to {}'s score of {}</h4>".format(selectPlayers[0], round(p1Score, 2), selectPlayers[1], p2Score), unsafe_allow_html=True)					
+
+######################################################################
+# PLAYER EARNINGS HEADER
+######################################################################
+
+with player_earnings_header:
+	st.markdown("<h2 style='text-align: center'>Player Earning</h2>", unsafe_allow_html=True)
+	st.markdown("<h5 style='text-align: center'>Select 2 players for a head-to-head comparison</h5>", unsafe_allow_html=True)
+
+######################################################################
+# PLAYER HEAD-TO-HEAD DATA
+######################################################################	
+
+# with player_earnings:
